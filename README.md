@@ -4,12 +4,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About
 
-[**account-sharing**](https://github.com/Alfred-Walker/account-sharing/) is a serverless project for account sharing based on cooperative schedulilng.
+[**account-sharing**](https://github.com/Alfred-Walker/account-sharing/) is a serverless project example for account sharing based on cooperative schedulilng.
 
 It contains:
 * AWS Lambda Function to update account sharing status based on AWS API Gateway's REST API supports
   - AWS Lambda proxy routing on Echo framework context
-  - Simple MySQL RDS model for sharing account
+  - Simple MySQL RDS model for sharing account (single row)
   - Makefile supports (build & deploy & lambda function creation)
   
 
