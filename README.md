@@ -85,10 +85,6 @@ make deploy
 
 
 
-## Example
-* [**Account Sharing Example**](https://alfred-walker.github.io/account-sharing-app/) (Korean, Asia/Seoul) <br/>
-
-
 <!-- CONTRIBUTING -->
 ## Contributing
 
