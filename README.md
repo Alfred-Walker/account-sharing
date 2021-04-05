@@ -1,4 +1,4 @@
-# account-sharing
+# account-sharing (on going)
 
 
 <!-- ABOUT THE PROJECT -->
