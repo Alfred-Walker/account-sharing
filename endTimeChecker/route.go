@@ -41,5 +41,15 @@ func handleRoot(c echo.Context) error {
 	// checks whether current account endtime is passed or not
 	account := models.GetFirstAccount(rds.RdsGorm).CheckEndTime(rds.RdsGorm)
 
+	if account.EndTime == "" {
+		// send alarm to users who wait their turn
+		err := sendAlarm()
+
+		if err != nil {
+			log.Printf("endTimeChecker: Failed to get all messages from SQS")
+			log.Printf(err.Error())
+		}
+	}
+
 	return c.JSON(http.StatusOK, account)
 }
