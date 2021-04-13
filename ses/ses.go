@@ -10,7 +10,7 @@ import (
 	"github.com/Alfred-Walker/AccountSharing/constants"
 )
 
-// GetCsv receives S3 service client, bucket name, and key.
+// SendEmail receives SES service client, textBody, and email subject.
 // It returns a buffer of file corresponds to key.
 func SendEmail(svc *ses.SES, textBody string, subject string) error {
 	// The subject line for the email.
