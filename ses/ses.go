@@ -1,7 +1,6 @@
 package log
 
 import (
-	"bytes"
 	"errors"
 	"log"
 
@@ -13,17 +12,21 @@ import (
 
 // GetCsv receives S3 service client, bucket name, and key.
 // It returns a buffer of file corresponds to key.
-func SendEmail(svc *ses.SES, buffer *bytes.Buffer, subject string) error {
+func SendEmail(svc *ses.SES, textBody string, subject string) error {
 	// The subject line for the email.
 	Subject := subject
 
+	//The email body for recipients with non-HTML email clients.
+	TextBody := textBody
+
 	// The HTML body for the email.
-	HtmlBody := "<h1>Amazon SES Test Email (AWS SDK for Go)</h1><p>This email was sent with " +
+	HtmlBody := 
+		"<div>" + 
+		textBody +
+		"</div>" +
+		"<p>This email was sent with " +
 		"<a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the " +
 		"<a href='https://aws.amazon.com/sdk-for-go/'>AWS SDK for Go</a>.</p>"
-
-	//The email body for recipients with non-HTML email clients.
-	TextBody := buffer.String()
 
 	// The character encoding for the email.
 	CharSet := "UTF-8"

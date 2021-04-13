@@ -6,9 +6,6 @@ import (
 	"log"
 	"time"
 
-	echoadapter "github.com/awslabs/aws-lambda-go-api-proxy/echo"
-
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
@@ -19,22 +16,16 @@ import (
 	sesAdapter "github.com/Alfred-Walker/AccountSharing/ses"
 )
 
-// EchoLambda proxy instance to path route
-var echoLambda *echoadapter.EchoLambda
-
 // init initializes rds connection and routing.
 func init() {
 	log.Printf("mailSender: Lambda cold start...")
 }
 
 func main() {
-	lambda.Start(echoLambdaHandler)
+	lambda.Start(HandleRequest)
 }
 
-// echoLambdaHandler receives context and an API Gateway proxy event,
-// and ProxyWithContext transforms them into an http.Request object, and sends it to the echo.Echo for routing.
-// It returns a proxy response object generated from the ProxyWithContext.
-func echoLambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func HandleRequest(ctx context.Context) (error) {
 	// get last day date
 	loc, _ := time.LoadLocation("Asia/Seoul")
 	localTime := time.Now().Local().AddDate(0, 0, -1).In(loc)
@@ -61,9 +52,13 @@ func echoLambdaHandler(ctx context.Context, req events.APIGatewayProxyRequest) (
 		subject := fmt.Sprintf("[Account-Sharing] 접속 로그 (%s)", lastDay)
 
 		// Send buffer contents to mail
-		sesAdapter.SendEmail(mailSvc, buffer, subject)
+		if buffer != nil && buffer.String() == "" {
+			// send the list of access user
+			sesAdapter.SendEmail(mailSvc, buffer.String(), subject)
+		} else {
+			// no access user on the last day
+			sesAdapter.SendEmail(mailSvc, "아무도 접속하지 않았습니다...", subject)
+		}
 	}
-
-	// If no name is provided in the HTTP request body, throw an error
-	return echoLambda.ProxyWithContext(ctx, req)
+	return nil
 }
