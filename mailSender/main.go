@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"time"
@@ -42,6 +44,7 @@ func HandleRequest(ctx context.Context) (error) {
 
 	// Be careful of file extension
 	buffer, err := s3Adapter.GetFileBuffer(s3Svc, constants.OCCUPATION_LOG_BUCKET, lastDay + ".csv")
+	var textBody string
 
 	if err != nil {
 		log.Printf("mailSender: Failed to get a buffer from S3")
@@ -54,12 +57,51 @@ func HandleRequest(ctx context.Context) (error) {
 
 		// Send buffer contents to mail
 		if buffer != nil && buffer.String() != "" {
-			// send the list of access user
-			sesAdapter.SendEmail(mailSvc, buffer.String(), subject)
+			// csv reader setup
+			rdr := csv.NewReader(bufio.NewReader(buffer))
+ 
+			// read all csv contents
+			rows, _ := rdr.ReadAll()
+
+			// simple html tags
+			textBody = "<table>"
+
+			for i, row := range rows {
+				if i != 0 {
+					textBody += "<tr>"
+				}
+				
+				for j := range row {
+					if i == 0 {
+						textBody += "<th>"
+					} else {
+						textBody += "<td>"
+					}
+
+					textBody += rows[i][j]
+					// fmt.Printf("%s ", rows[i][j])
+
+					if i == 0 {
+						textBody += "</th>"
+					} else {
+						textBody += "</td>"
+					}
+				}
+
+				if i != 0 {
+					textBody += "</tr>"
+				}
+			}
+
+			textBody += "</table>"
+
 		} else {
 			// no access user on the last day
-			sesAdapter.SendEmail(mailSvc, "아무도 접속하지 않았습니다...", subject)
+			textBody = "아무도 접속하지 않았습니다..."
 		}
+
+		// send email
+		sesAdapter.SendEmail(mailSvc, textBody, subject)
 	}
 	return nil
 }
