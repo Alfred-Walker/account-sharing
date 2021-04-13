@@ -3,8 +3,10 @@ zip:
 	export GOOS=linux GOARCH=amd64 CGO_ENABLED=0
 	go build -o ./accountTaker/main ./accountTaker/*.go
 	go build -o ./endTimeChecker/main ./endTimeChecker/*.go
+	go build -o ./mailSender/main ./mailSender/*.go
 	build-lambda-zip.exe -output ./accountTaker/main.zip ./accountTaker/main
 	build-lambda-zip.exe -output ./endTimeChecker/main.zip ./endTimeChecker/main
+	build-lambda-zip.exe -output ./mailSender/main.zip ./mailSender/main
 
 .PHONY: createLambdaAccountTaker
 createLambdaAccountTaker: 
@@ -13,6 +15,10 @@ createLambdaAccountTaker:
 .PHONY: createLambdaEndTimeChecker
 createLambdaEndTimeChecker: 
 	aws lambda create-function --function-name endTimeChecker --runtime go1.x --zip-file fileb://endTimeChecker/main.zip --handler main --role YOUR_ROLE
+
+.PHONY: createLambdaMailSender
+createLambdaMailSender: 
+	aws lambda create-function --function-name mailSender --runtime go1.x --zip-file fileb://mailSender/main.zip --handler main --role YOUR_ROLE
 
 .PHONY: createAlarmQueue
 createAlarmQueue: 
@@ -40,3 +46,4 @@ testSendingMsgToPhone:
 deploy: zip
 	aws lambda update-function-code --region ap-northeast-2 --function-name accountTaker --zip-file fileb://accountTaker/main.zip
 	aws lambda update-function-code --region ap-northeast-2 --function-name endTimeChecker --zip-file fileb://endTimeChecker/main.zip
+	aws lambda update-function-code --region ap-northeast-2 --function-name mailSender --zip-file fileb://mailSender/main.zip
