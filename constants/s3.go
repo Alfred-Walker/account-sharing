@@ -4,7 +4,5 @@ package constants
 // Use your environment variables or external file to handle private values.
 // e.g. BUCKET := os.Getenv("BUCKET")
 
-// You can use "YOUR OWN" queue name for AWS SQS
-const SQS_QUEUE = "alarmQueue"
-
-const SQS_MAX_NUMBER_OF_MESSAGES = 10
+// use "YOUR OWN" S3 setup constants
+const OCCUPATION_LOG_BUCKET = "occupation-logs-bucket"

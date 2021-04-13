@@ -27,6 +27,10 @@ createFifoAlarmQueue:
 purgeAlarmQueue: 
 	aws sqs purge-queue --queue-url YOUR_QUEUE_URL
 
+.PHONY: createS3Bucket
+createS3Bucket: 
+	aws s3api create-bucket --bucket YOUR_BUCKET_NAME --region ap-northeast-2 --create-bucket-configuration LocationConstraint=ap-northeast-2
+
 # Be sure that your region support to send SNS message
 .PHONY: testSendingMsgToPhone
 testSendingMsgToPhone:

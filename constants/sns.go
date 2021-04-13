@@ -2,6 +2,7 @@ package constants
 
 // IMPORTANT: DO NOT UPLOAD ID OR PASSWORD TO GITHUB OR OTHER REPOSITORIES.
 // Use your environment variables or external file to handle private values.
+// e.g. BUCKET := os.Getenv("BUCKET")
 
 // You can choose region that supports SNS message transfer at below.
 // https://docs.aws.amazon.com/na_en/sns/latest/dg/sns-supported-regions-countries.html

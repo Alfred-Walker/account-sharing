@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/sqs"
 
 	echoadapter "github.com/awslabs/aws-lambda-go-api-proxy/echo"
@@ -19,6 +21,7 @@ import (
 	"github.com/Alfred-Walker/AccountSharing/constants"
 	"github.com/Alfred-Walker/AccountSharing/models"
 	"github.com/Alfred-Walker/AccountSharing/rds"
+	s3Adapter "github.com/Alfred-Walker/AccountSharing/s3"
 	sqsAdapter "github.com/Alfred-Walker/AccountSharing/sqs"
 )
 
@@ -135,14 +138,40 @@ func handleSetAlarm(c echo.Context) error {
 func handleOccupyAccount(c echo.Context) error {
 	data := NewOccupier{}
 	if err := c.Bind(&data); err != nil {
-		log.Printf("accountTaker: error at binding NewOccupier")
+		log.Printf("accountTaker: error at binding NewOccupier - %v", err.Error())
 		return err
 	}
 
 	account, err := models.OccupyAccount(rds.RdsGorm, data.Name, data.EndTime)
 
 	if err != nil {
+		log.Printf("accountTaker: OccupyAccount error - %v", err.Error())
 		return err
+	}
+
+	// write log
+	// Create a session that gets credential values from ~/.aws/credentials
+	// and the default region from ~/.aws/config
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	// Create an S3 service client
+	svc := s3.New(sess)
+
+	// date as key / now as record
+	loc, _ := time.LoadLocation("Asia/Seoul")
+	localTime := time.Now().Local().In(loc)
+	date := localTime.Format("2006-01-02") 
+	now := localTime.Format(time.Kitchen)
+
+	OCCUPATION_LOG_HEADER := []string{"USER", "TIME"}
+	record := []string{data.Name, now}
+
+	err = s3Adapter.UpdateCsv(svc, constants.OCCUPATION_LOG_BUCKET, date + ".csv", record, OCCUPATION_LOG_HEADER)
+
+	if err != nil {
+		log.Printf("accountTaker: error when logging occupation, %v", err.Error())
 	}
 
 	return c.JSON(http.StatusOK, account)

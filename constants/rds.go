@@ -2,6 +2,7 @@ package constants
 
 // IMPORTANT: DO NOT UPLOAD ID OR PASSWORD TO GITHUB OR OTHER REPOSITORIES.
 // Use your environment variables or external file to handle private values.
+// e.g. BUCKET := os.Getenv("BUCKET")
 
 // use "YOUR OWN" rds setup constants
 const DB_USERNAME = "YOUR_DB_USERNAME"
