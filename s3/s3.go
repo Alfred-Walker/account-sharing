@@ -56,12 +56,12 @@ func GetFileBuffer(svc *s3.S3, bucket string, key string) (*bytes.Buffer, error)
 			Key:    aws.String(key),
 		})
 
-		defer obj.Body.Close()
-
 		if err != nil {
 			log.Printf("S3: error %v at GetFile", err.Error())
 			return nil, err
 		}
+
+		defer obj.Body.Close()
 
 		buffer.ReadFrom(obj.Body)
 		return buffer, nil
