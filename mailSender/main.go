@@ -40,7 +40,8 @@ func HandleRequest(ctx context.Context) (error) {
 	// Create an S3 service client
 	s3Svc := s3.New(sess)
 
-	buffer, err := s3Adapter.GetFileBuffer(s3Svc, constants.OCCUPATION_LOG_BUCKET, lastDay)
+	// Be careful of file extension
+	buffer, err := s3Adapter.GetFileBuffer(s3Svc, constants.OCCUPATION_LOG_BUCKET, lastDay + ".csv")
 
 	if err != nil {
 		log.Printf("mailSender: Failed to get a buffer from S3")
@@ -52,7 +53,7 @@ func HandleRequest(ctx context.Context) (error) {
 		subject := fmt.Sprintf("[Account-Sharing] 접속 로그 (%s)", lastDay)
 
 		// Send buffer contents to mail
-		if buffer != nil && buffer.String() == "" {
+		if buffer != nil && buffer.String() != "" {
 			// send the list of access user
 			sesAdapter.SendEmail(mailSvc, buffer.String(), subject)
 		} else {
