@@ -67,20 +67,26 @@ const DB_PORT = "3306"
 	aws s3api create-bucket --bucket YOUR_BUCKET_NAME --region YOUR_REGION --create-bucket-configuration LocationConstraint=YOUR_REGION
 ```
 
-* Configure SQS queue & S3 bucket info
+* Configure SQS queue & S3 bucket info (constants/sqs.go, constants/s3.go)
+
+sqs.go
 ```sh
 	const SQS_QUEUE = "alarmQueue"
 	const SQS_MAX_NUMBER_OF_MESSAGES = 10
 ```
+s3.go
 ```sh
 	const OCCUPATION_LOG_BUCKET = "YOUR_BUCKET_NAME"
 ```
 
-* Configure SES & SNS info
+* Configure SES & SNS info (constants/ses.go, constants/sns.go)
+
+ses.go
 ```sh
 	const EMAIL_SENDER = "YOUR.EMAIL@domain.com"
 	const EMAIL_RECIPIENT = "YOUR.EMAIL@domain.com"
 ```
+sns.go
 ```sh
 	const SNS_SESSION_REGION = "YOUR_SNS_REGION"
 	const SNS_ALARM_MESSAGE = "YOUR_ACCESS_ALARM_MESSAGE"
