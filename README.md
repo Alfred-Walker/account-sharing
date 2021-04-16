@@ -17,6 +17,10 @@ It contains:
 
 <br/>
 
+![AccountSharing](https://user-images.githubusercontent.com/46514591/114987489-2ff67800-9ed0-11eb-8318-80c1c6753087.png)
+
+<br/>
+
 ## Main End-points
 * accountTaker <br/>
   * just replace all 'study' in path with 'question' to access end-points for `Question` instead `Study`.
