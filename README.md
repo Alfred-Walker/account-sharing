@@ -11,6 +11,8 @@ It contains:
   - AWS Lambda proxy routing on Echo framework context
   - Simple MySQL RDS model for sharing account (single row)
   - Makefile supports (build & deploy & lambda function creation)
+  - Alarm notification via SMS
+  - Custom access log via SES
   
 
 <br/>
@@ -29,6 +31,7 @@ It contains:
 
 |  HTTP |  Path |  Method |  Purpose |
 | --- | --- | --- | --- |
+|**GET** |/{API_GATEWAY_RESOURCE_NAME}|Update|Alarm Notification & SQS Update|
 <br/>
 
 
@@ -52,10 +55,25 @@ const DB_PORT = "3306"
 * Create Lambda function using Makefile or AWS-CLI
   * Be sure to use your own AWS role defined.
 ```sh
-	aws lambda create-function --function-name accountTaker --runtime go1.x --zip-file fileb://accountTaker/main.zip --handler main --role "YOUR_ROLE"
-	aws lambda create-function --function-name endTimeChecker --runtime go1.x --zip-file fileb://endTimeChecker/main.zip --handler main --role "YOUR_ROLE"
+	aws lambda create-function --function-name accountTaker --runtime go1.x --zip-file fileb://accountTaker/main.zip --handler main --role YOUR_ROLE
+	aws lambda create-function --function-name endTimeChecker --runtime go1.x --zip-file fileb://endTimeChecker/main.zip --handler main --role YOUR_ROLE
+	aws lambda create-function --function-name mailSender --runtime go1.x --zip-file fileb://mailSender/main.zip --handler main --role YOUR_ROLE
 ```
-* Configure AWS API Gateway API with methods (accountTaker)
+
+* Create SQS queue & S3 bucket using Makefile or AWS-CLI
+  * Be sure to use your own AWS role defined.
+```sh
+	aws sqs create-queue --queue-name YOUR_QUEUE_NAME --region ap-northeast-2
+	aws s3api create-bucket --bucket YOUR_BUCKET_NAME --region YOUR_REGION --create-bucket-configuration LocationConstraint=YOUR_REGION
+```
+
+* Create SQS queue using Makefile or AWS-CLI
+  * Be sure to use your own AWS role defined.
+```sh
+	aws sqs create-queue --queue-name YOUR_QUEUE_NAME --region YOUR_REGION
+```
+
+* Configure AWS API Gateway API with methods (accountTaker, endtimeChecker)
   * Create API resources with methods connected to lambda function, accountTaker.
   * Activate API Gateway CORS when creating API resources.
   * Connects lambda function to API methods. (and checks Lambda proxy, too.)
@@ -70,10 +88,12 @@ const DB_PORT = "3306"
         OPTIONS
 ```
 
-* Register AWS CloudWatch event rule for lambda function, endTimeChecker
+* Register AWS CloudWatch event rule for lambda function (endTimeChecker, mailSender)
   * Add EventBridge(CloudWatch Events) trigger to the endTimeChecker lambda function.
   * For cron job, generate rules written in regex
     * e.g. rate(1 minute)
+
+* Setup SMS limit for AWS SNS
 
 ### Golang Project
 ```sh
