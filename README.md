@@ -63,14 +63,27 @@ const DB_PORT = "3306"
 * Create SQS queue & S3 bucket using Makefile or AWS-CLI
   * Be sure to use your own AWS role defined.
 ```sh
-	aws sqs create-queue --queue-name YOUR_QUEUE_NAME --region ap-northeast-2
+	aws sqs create-queue --queue-name YOUR_QUEUE_NAME --region YOUR_REGION
 	aws s3api create-bucket --bucket YOUR_BUCKET_NAME --region YOUR_REGION --create-bucket-configuration LocationConstraint=YOUR_REGION
 ```
 
-* Create SQS queue using Makefile or AWS-CLI
-  * Be sure to use your own AWS role defined.
+* Configure SQS queue & S3 bucket info
 ```sh
-	aws sqs create-queue --queue-name YOUR_QUEUE_NAME --region YOUR_REGION
+	const SQS_QUEUE = "alarmQueue"
+	const SQS_MAX_NUMBER_OF_MESSAGES = 10
+```
+```sh
+	const OCCUPATION_LOG_BUCKET = "YOUR_BUCKET_NAME"
+```
+
+* Configure SES & SNS info
+```sh
+	const EMAIL_SENDER = "YOUR.EMAIL@domain.com"
+	const EMAIL_RECIPIENT = "YOUR.EMAIL@domain.com"
+```
+```sh
+	const SNS_SESSION_REGION = "YOUR_SNS_REGION"
+	const SNS_ALARM_MESSAGE = "YOUR_ACCESS_ALARM_MESSAGE"
 ```
 
 * Configure AWS API Gateway API with methods (accountTaker, endtimeChecker)
